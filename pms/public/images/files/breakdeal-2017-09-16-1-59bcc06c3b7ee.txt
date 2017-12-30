@@ -1,0 +1,75 @@
+Thanks, I am still adding data tables to spitzpos in brakedeal database. These tables are created from client data and uploaded to the SQL server. Certain ones get synced during the day, others are replaced during a service period at night. The data is from FoxPro.
+So you will be writing java/PHP code that queries the data based on the user input.
+
+Many of these programs will be simple.
+For example:
+Car Location : There will be input for user to enter car number. So your program will
+GET CA_Number in cars 
+Reply back with location value in Ca_locate 
+All these programs are internal to the company. So we will need a User File that authenticates the User by MAC Address
+
+Each program will add log user activity in a LOG FILE. so the log file for the car locate would like like 
+CARLOC DALE date/time D-3
+Program, user, date/time action
+There will be data that has to be collected and returned to the client to process 
+We are calling this process the BACKHAUL DATA.
+
+So if we write a program that allowed a user to enter a new location for car number D-3 we have to create a new record in a table that shows that ca_number D-3 is now in Location x. After we BACKHAUL? the record and Mark it posted. The Location gets changed in Company system to x, then on a schedule the new SQL data is uploaded.
+Amit - We are not making any changes to the tables that we are uploading and syncing. This is only a one way sync. Data changes after a BACKHAUL.
+so we call it POS Point of sale, because we will be writing invoices in this system.
+My problem today is that when I am uploading or syncing day in spitzpos, there were some bugs where All tables were removed from spitzpos. 
+That would be a bad thing if you make new tables for users. Logs, and BACKHAUL data then one of my program that is updating data , wipes the whole database empty. 
+I still have some small work to do on the data. For example, in cars, I did not add the field color to the SQL data. 
+So most of the data we need is in spitzpos. I am checking the project programs? to make sure we have all the data. You will get these to start tomorrow.
+
+For today, need to ask if you agree that we should have a DB1 with my data and a DB2 with your data files. 
+so what I propose is
+Spitzdata - my files. (Originally spitzpos)
+Spitzpos - data files created by project
+Please advise
+
+SpitzPOS - Register
+We will register this device for:
+GET : Your Name
+GET: Date of Birth
+GET: Contact Cell
+GET: Contact Provider
+We will contact you once device is active.
+
+USER Data
+Name
+DOB
+Cell
+Carrier
+
+Mac
+Device type
+
+STAT. P. Pending. A. Approved. X Blocked
+
+
+Log file.
+
+Program = REGISTER
+Date
+Time
+Description = "name' wants to Register
+Stat = R.
+USER FILE will have at most 40 records. They are actually Devices, not Users.
+https://url.upwork.com/_01IBBlhuHKFpqs2JE1lbpn2EUGSdVU71nf
+
+But the reason for all the fields is mostly for printer options, SMS, emails, defaults for each USER. We will enter all the USER info by hand and then set the the STAT to A A for Approved. 
+I changed the name of my database to spitzdata.
+
+Attached is an item that was not part of the original project. We don't know photos. But take a look at it please.
+https://url.upwork.com/_01p3yh5kvd0JpPfaT7YW4M26ITZKzvj7P_
+
+
+Create a sub domain spitzpos
+
+
+http://spitzpos.brakedeal.com/
+
+
+http://flatfull.com/themes/angulr/angular/#/app/table/smart
+

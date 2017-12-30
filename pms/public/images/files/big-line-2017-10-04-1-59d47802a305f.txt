@@ -1,0 +1,55 @@
+Note from Jeff: 
+First change line   x  = ROUND(&lvar_x, 2 ) to x  = ROUND(val(&lvar)_x, 2 )
+ok
+so here is what i think happens
+lvar_q = CR_L1_1 for first item on line 1
+q  = VAL(&lvar_q)  so if QTY = 1 then we know the value that will go in CR_L1_1
+is 1
+VAL is to get numeric
+
+There is no var -> lvar_q is a variable and the & in front of &lvar_q 
+in foxpro, defines the variable. 
+
+you already know the values of q r p x d1 d2 for each line
+
+but need to associate them with CR_L1_1 and thru CR_l10_6 to get the values on the page.
+--------------------------------------------------------------
+hope this explains
+
+************************************************************************************
+ 
+ 
+
+
+SELE cash_reg
+
+   lno=1
+
+*** Loop thru up to 10 Lines
+
+   DO WHILE lno <= 10
+
+      imnum = 0
+
+*** determine a VARIABLE NAME for each Line Item Variable
+
+      lvar_q ="CR_L"+ALLTRIM(STR(lno,2))+"_1" && quantity code for line#
+      lvar_r ="CR_L"+ALLTRIM(STR(lno,2))+"_2" && retail   code for line#
+      lvar_p ="CR_L"+ALLTRIM(STR(lno,2))+"_3" && price for line#
+      lvar_x ="CR_L"+ALLTRIM(STR(lno,2))+"_4" && exten for line#
+      lvar_d1="CR_L"+ALLTRIM(STR(lno,2))+"_5" && desc1 for line#
+      lvar_d2="CR_L"+ALLTRIM(STR(lno,2))+"_6" && desc2 for line#
+
+** NOTE : & in front of a variable name equals the value of the variable
+** NOTE : the val() function makes a string into a numeric variable
+
+*** assign values to parsed variables
+
+      lin   = lno
+
+      q  = VAL(&lvar_q)
+      r  = &lvar_r
+      p  = VAL(&lvar_p)
+      x  = ROUND(&lvar_x, 2 )
+      d1 = &lvar_d1
+      d2 = &lvar_d2

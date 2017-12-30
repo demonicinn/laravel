@@ -1,0 +1,763 @@
+
+* LASER_POS.PRG  (New) Retail Invoice Listing for HP PCL Printers
+
+** CASH_REG SHOULD BE SELECTED AND POSITIONED ON RECORD TO BE PRINTED
+
+** CR_STORE CONTROLS WHICH CUSTOMER FILE IS USED (SET alias to CUSTOMER ?)
+** store1 IS CUSTOMER.SQL
+** store2 IS PIT_CUST.SQL
+** store3 IS CAS_CUST.SQL
+
+to_print=3  && Always print sets of 3 pages (for ACCOUNTING, INVOICE, and WAREHOUSE)
+
+********************************************
+* Setup Printing to an Alternate Output File
+********************************************
+
+altname = "W:\new_cash.alt"
+
+SET ALTE TO &altname
+SET ALTERNATE ON
+
+NAME =customer->cu_cusname
+addr1=customer->cu_addr1
+addr2=customer->cu_addr2
+city=TRIM(addr2)+", "+customer.cu_state+"  "+ TRIM(customer.cu_zip)
+
+IF LEN(city) < 3  && So that a single comma does not print when there is no city specified
+   city=""
+ENDIF
+
+*******************************************************
+***Initiate Variables for Counters and Customer Heading
+*******************************************************
+
+u_tire = .F.  && keep track of whether the invoice has any used tires - initialize to false
+
+cutpages = 3  && Always Print 3 Copies for now (except SINGLE option)
+
+cutpage  = 1  && START AT PAGE 1
+
+***********************************
+***  some print tray stuff ???  ***
+***********************************
+
+*** Loop thru pages to be printed
+
+DO WHILE cutpage <= cutpages    && FORWARDS FOR NOW
+
+   SELECT cash_reg
+
+   ?? esc + "E"  && Reset HP Printer on each Page
+
+**********************************
+* Print Invoice Type based on Page
+**********************************
+* print title
+*************
+
+   IF cutpage=1
+      ? pcl_pos( 0,10 ) + esc+"(s1p35v4s3b4148T"+ esc +"&a100V" + esc + "&a3800HACCOUNTING" + esc + "(3@"
+   ENDIF
+
+   IF cutpage=2
+      ? pcl_pos( 0,10 ) + esc+"(s1p35v4s3b4148T"+ esc +"&a100V" + esc + "&a4300HINVOICE"    + esc + "(3@"
+   ENDIF
+
+   IF cutpage=3
+      ? pcl_pos( 0,10 ) + esc+"(s1p35v4s3b4148T"+ esc +"&a100V" + esc + "&a3900HWAREHOUSE"  + esc + "(3@"
+   ENDIF
+
+   ? pcl_pos( 0,10 ) +  CHR(27)+"(s0B"
+
+***************
+* Print Heading
+***************
+
+pieces = 0  &&& Initialize Counter for Pieces
+
+address = "12570 Route 30, IRWIN, PA  15642"
+adrl    = LEN(address)
+
+***************************************
+* Print Store Name, Address, Phone, Fax
+***************************************
+
+STORE = VAL(cash_reg.cr_store)
+
+address = "12570 State Route 30, IRWIN, PA  15642"
+
+IF STORE = 1
+
+   IF customer.cu_type $ "HIS"
+
+      ? esc+"(s1S"+esc+"(s1p35v5s3b24580T"+esc+"&a100V"+esc+"&a100H" + "SPITZ HEAVY DUTY"  + esc + "(3@"
+
+      address = "12570 State Route 30, IRWIN, PA  15642"
+
+      ? esc+"(s1S"+esc+"(s1p15v5s3b24580T"+esc+"&a325V"+esc+"&a100H"+address  +"  Phone : 724-864-7878"+esc + "(3@"
+
+   ENDIF
+
+ENDIF
+
+IF STORE = 2
+
+   ? esc+"(s1S"+esc+"(s1p35v5s3b24580T"+esc+"&a100V"+esc+"&a100H" + "PITTSBURGH TRUCK PARTS"  + esc + "(3@"
+
+     address = "5015 Grand Avenue, PITTSBURGH, PA  15225"
+
+   ? esc+"(s1S"+esc+"(s1p15v5s3b24580T"+esc+"&a325V"+esc+"&a100H"+address  +"  Phone : 724-864-7878"+esc + "(3@"
+
+ENDIF
+
+IF STORE = 3
+
+   ? esc+"(s1S"+esc+"(s1p35v5s3b24580T"+esc+"&a100V"+esc+"&a100H" + "CASTLE AUTO PARTS"  + esc + "(3@"
+
+     address = "620 South Mill Street, NEW CASTLE, PA  16101"
+
+   ? esc+"(s1S"+esc+"(s1p15v5s3b24580T"+esc+"&a325V"+esc+"&a100H"+address  +"  Phone : 724-864-7878"+esc + "(3@"
+
+ENDIF
+
+IF customer.cu_sq = "Q"  &&  BLANK FOR LINE ADJUSTMENT
+
+   ? esc+"(s1S"+esc+"(s1p30v5s3b24580T"+esc+"&a100V"+esc+"&a100H" + "Quality Brand  qbrand.com"  + esc + "(3@"
+
+     address = "12570 State Route 30, IRWIN, PA  15642"
+
+   ? esc+"(s1S"+esc+"(s1p15v5s3b24580T"+esc+"&a325V"+esc+"&a100H"+ address +"  Phone : 800-525-0988"+esc + "(3@"
+
+ENDIF
+
+*********************
+* SPECIAL TRUCK NOTES
+*********************
+
+truck=""
+
+IF "LIFTGATE" $ UPPER(customer.cu_screen1)
+   truck = "LIFTGATE TRUCK NEEDED"
+ENDIF
+
+IF "STRAIGHT" $ UPPER(customer.cu_screen1)
+   truck = truck + "STRAIGHT TRUCK NEEDED"
+ENDIF
+
+*** pcl_pos() is a function
+
+
+&& here is what I see in the foxpro code : 
+l1=TRIM(cu_cusname)
+l2=TRIM(cu_addr1) 
+l3=TRIM(cu_city)
+l4=""
+
+
+IF NOT EMPTY(truck)
+   ? pcl_pos( - 3+6,53-adj ) +  "* " + truck + " *"
+ENDIF
+
+? pcl_pos( 4,55-adj )  +  DTOC(cash_reg.cr_date) && we need this to be mm/dd/yyyy
+
+? pcl_pos( 4,70-adj )  +  cash_reg.cr_slipno  
+
+If Len(Alltrim(cr_cardno))>9
+  ? pcl_pos( - 3+9,10-Adj )  +  "PO#"+Alltrim(cr_cardno)
+Endif
+
+? pcl_pos( 8,08-adj )  +  l1
+? pcl_pos( 8,45-adj )  +  customer->cu_custno
+
+? pcl_pos( 9,08-adj )  +  l2
+? pcl_pos( 9,45-adj )  +  IIF(customer.cu_90sales>5000,"TOP 20"+"  "+customer.cu_slm,"")
+
+? pcl_pos( 10,08-adj )  +  l3
+
+? pcl_pos( 12,08-adj )  +  l4
+
+   IF EMPTY(customer.cu_townzip)
+
+      ? pcl_pos( 11,45-adj )  +  ALLTRIM(customer.cu_town)
+
+   ELSE
+
+      ? pcl_pos( 12, 04-adj  + LEN(ALLTRIM(l4))+2 ) + ;
+         "Ship to : " + ALLTRIM(customer.cu_town) + " Zip:" + ALLTRIM(customer.cu_townzip)
+
+   ENDIF
+
+
+
+
+? pcl_pos( 12,66-adj )  +  customer.cu_phone
+
+? pcl_pos( 13,45-adj )  +  cr_zone + STR(customer->cu_seq,4)
+
+IF cr_terms = "credit"
+   ? pcl_pos( 15,15-adj )  +  "X"
+   ? pcl_pos( 15,19-adj )  +  "X"
+else
+   ? pcl_pos( 15,00)  + TRIM(cr_cardno)
+ENDIF
+
+? pcl_pos( 15,22-adj )  +  TRIM(cr_terms)
+? pcl_pos( 15,33-adj )  +  TRIM(cr_user)
+
+xx=1
+
+**************  end of Heading Section ******************
+
+   SELE cash_reg
+
+   lno=1
+
+*** Loop thru up to 10 Lines
+
+   DO WHILE lno <= 10
+
+      imnum = 0
+
+*** determine a VARIABLE NAME for each Line Item Variable
+
+      lvar_q ="CR_L"+ALLTRIM(STR(lno,2))+"_1" && quantity code for line#
+      lvar_r ="CR_L"+ALLTRIM(STR(lno,2))+"_2" && retail   code for line#
+      lvar_p ="CR_L"+ALLTRIM(STR(lno,2))+"_3" && price for line#
+      lvar_x ="CR_L"+ALLTRIM(STR(lno,2))+"_4" && exten for line#
+      lvar_d1="CR_L"+ALLTRIM(STR(lno,2))+"_5" && desc1 for line#
+      lvar_d2="CR_L"+ALLTRIM(STR(lno,2))+"_6" && desc2 for line#
+
+** NOTE : & in front of a variable name equals the value of the variable
+** NOTE : the val() function makes a string into a numeric variable
+
+*** assign values to parsed variables
+
+      lin   = lno
+
+      q  = VAL(&lvar_q)
+      r  = &lvar_r
+      p  = VAL(&lvar_p)
+      x  = ROUND(&lvar_x, 2 )
+      d1 = &lvar_d1
+      d2 = &lvar_d2
+
+      IF "USED TIRE" $ d1+d2  && will trigger message at end of invoice
+         u_tire = .T.
+      ENDIF
+
+      IF "USED" $ r
+         imnum = VAL(SUBSTR(d1,4,6))
+      ELSE
+         imnum = 0
+      ENDIF
+
+*** Set Last Date to Return Items based on Line 1
+
+      SELE cash_reg
+
+      IF q <> 0
+
+         DESCR = TRIM(STRTR( d1, "PART#", "PART# ")) && Remove PART@ from description to be printed
+
+* remove spaces after dashes
+
+         DESCR = TRIM(STRTR( d1, "- ", "-"))
+
+         DESCR = PADR(ALLTRIM(PADR(d1,30)+" "+d2),60) && REMOVE SPACES After dashes
+
+         IF EMPTY(DESCR)
+            d1 = PADR( r, 60 )
+         ENDIF
+
+         pr_qty=IIF(cred_inv OR debitmemo ,-1 * q , q )
+
+         d1 = PADR(ALLTRIM(PADR( d1,30) + " " + d12 ) , 60)
+
+         IF EMPTY(d1)
+            DESCR = PADR( r, 60 )
+         ENDIF
+
+         zz= STR(q,4) + "  "
+
+         IF "NEW PART" $ r  OR  "USED PART" $ r OR "CORE" $ r
+
+            dl1 = zz + d1
+
+         ELSE
+
+            dl1 = zz + ALLTRIM(r) + " " + ALLTRIM(d1)
+
+         ENDIF
+
+         dl1 = STRTR(dl1,"PART# ","")  && Remove word "PART#"
+         dl1 = STRTR(dl1,"HPP:","")    && Remove word "HPP:"
+
+         dl2a = PADR(d2,32)
+         dl2b = STR( p,12,2) + STR( lamt,12,2)
+
+*LINE1
+*QTY+descr1 or rcode
+
+         ? pcl_pos( 16+(2*lin)-1,00 ) +  dl1   &&   Tran(pr_qty,"####")
+
+*LINE2
+*descr2
+
+         ? pcl_pos( 16+(2*lin)+0,05+11 ) +  dl2a  && Second Line Description for Part
+
+*PRICE
+         amt=ROUND(x,2)
+
+         dollars=INT(amt)
+
+         cents=ABS(ROUND((amt-dollars)*100,0))
+
+         dol_str = STR(dollars,6)
+
+         IF amt < 0 .AND. dollars = 0         && Special case for -.99 to -.01
+           dol_str = SPACE(4)+"-"+SPACE(1)
+         ENDIF && Amt < 0 .and. Dollars = 0   && Speci
+
+*
+** Print unit price and amount on pages 1 and 2 ONLY
+*
+
+*LINE2
+
+*** Print Dollars and Cents separately to fit in boxes on pre-printed Invoice form (only on page 1 and 2 of set)
+
+         IF ((cutpage=1) OR (cutpage=2))
+            ? pcl_pos( 16+(2*lin)+0,71-adj )  +  dol_str
+            ? pcl_pos( 16+(2*lin)+0,78-adj )  +  "."+  IIF(cents>9.1,STR(cents,2),"0"+STR(cents,1))
+         ENDIF && ((cutpage=1) or (cutpage=3))
+
+         partno=SPACE(10)
+
+         IF "NEW"   $ UPPER(r)
+            part_pos= AT("PART#",d1)
+            IF part_pos > 0
+               partno  = SUBSTR(d1,part_pos+5)
+            ENDIF
+            DESCR   = ALLTRIM(d2)
+         ENDIF
+
+         IF "USED"  $ UPPER(r) AND NOT "TIRE" $ UPPER(r) 
+            partno  = alltirm(d1)
+            DESCR   = ALLTRIM(d2)
+         ENDIF
+
+         IF NOT "NEW"   $ UPPER(r) AND NOT "USED"  $ UPPER(r)
+            partno  = ALLTRIM(UPPER(r))
+            DESCR   = ALLTRIM(d2)
+         ENDIF
+
+         partno=ALLTRIM(STRTR(UPPER(partno),"HPP:","")) && remove the HPP: if in partno
+
+         DESCR = ALLTRIM(d1)
+
+*AMOUNT, PIECES, WEIGHT
+
+         amttot = amttot + amt  && Accumulate total amount of parts on invoice
+
+         pieces = pieces + pr_qty   && Accumulate total pieces of parts on invoice
+
+* JEFF SAID INVENTORY FILE WAS NOT NEEDED HERE FOR NOW ???
+
+         weight = 0  && weight + (pr_qty*invent.ship_wgt)  && Accumulate total weight of parts on invoice
+
+      ENDIF
+
+      lno = lno + 1
+
+      lin = lin + 1
+
+   ENDDO
+
+   DO totals
+
+   cutpage = cutpage + 1    && FORWARDS FOR NOW  (Earlier Version printed pages in Reverse Order)
+
+   IF cutpage > 3
+      cutpage = 99          && only print one set for Trial or Dupl
+   ENDIF
+
+
+ENDDO && while cutpage <=  cutpages
+
+SET ALTE TO
+
+SET PRINT OFF
+
+
+******************************************
+*** Show the output on the screen for now
+******************************************
+
+MODIFY COMMAND &altname NOEDIT
+
+SELE cash_reg
+
+LOCATE FOR cr_slipno=cashnum
+
+**************************
+*** Mark Record as Printed
+**************************
+
+REPLACE cr_printed WITH .T.
+
+CLOSE DATABASES
+
+SET CONSOLE ON
+
+RETURN
+*/
+
+
+*****************
+* Procedure Files
+*****************
+
+***********
+PROC totals
+***********
+
+SELE cash_reg
+
+LOCATE FOR cr_slipno = cashnum
+
+dollars=INT(cr_total)
+
+cents=ABS(ROUND((cr_total-dollars)*100,0))
+
+? pcl_pos( - 3+19+(2*lin),0 ) +  "Pieces : "+ALLTRIM(STR(pieces,7)) ;
+
+dol_str = STR(dollars,6)
+
+IF amttot < 0 .AND. dollars = 0   && Special case for -.99 to -.01
+   dol_str = SPACE(4)+"-"+SPACE(1)
+ENDIF && Amttot < 0 .and. Dollars = 0   && Specia
+
+*
+** Print unit price and amount on pages 1 and 2 ONLY
+*
+
+IF ((cutpage=1) OR (cutpage=2))
+   ? pcl_pos( - 3+19+(2*lin),61-adj )  +  "Sub Total"
+   ? pcl_pos( - 3+19+(2*lin),71-adj )  +  dol_str
+   ? pcl_pos( - 3+19+(2*lin),78-adj )  +  "."+  IIF(cents>9.1,STR(cents,2),"0"+STR(cents,1))
+ENDIF && ((cutpage=1) or (cutpage=2))
+
+IF cash_reg.cr_taxamt <> 0  &&  was Customer->Cu_tax
+   lin=lin+1
+
+   taxtot  = cash_reg.cr_taxamt  && tax_calc(amttot+coreamt)
+
+   dollars = INT(ROUND(taxtot,2))
+
+   dol_str = STR(dollars,6)
+
+   IF taxtot < 0 .AND. dollars = 0   && Special case for -.99 to -.01
+      dol_str = SPACE(4)+"-"+SPACE(1)
+   ENDIF && Taxtot < 0 .and. Dollars = 0   && Specia
+
+   cents=ABS(ROUND((taxtot-dollars)*100,0))
+
+*
+** Print unit price and amount on pages 1 and 3 ONLY
+*
+   IF ((cutpage=1) OR (cutpage=2))
+      ? pcl_pos( - 3+19+(2*lin)-1,61-adj )  +  "State Tax"
+      ? pcl_pos( - 3+19+(2*lin)-1,71-adj )  +  dol_str
+      ? pcl_pos( - 3+19+(2*lin)-1,78-adj )  +  "."+  IIF(cents>9.1,STR(cents,2),"0"+STR(cents,1))
+   ENDIF && ((cutpage=1) or (cutpage=2))
+ELSE
+   taxtot=0
+ENDIF &&  was W_tax
+
+IF cash_reg.cr_taxamt <> 0 .OR. shipping <> 0 .OR. coreamt <> 0&&  was W_tax
+   lin=lin+1
+   totamt=amttot+taxtot+shipping+coreamt
+   dollars=INT(ROUND(totamt,2))
+
+   dol_str = STR(dollars,6)
+   IF totamt < 0 .AND. dollars = 0   && Special case for -.99 to -.01
+      dol_str = SPACE(4)+"-"+SPACE(1)
+   ENDIF && Totamt < 0 .and. Dollars = 0   && Specia
+
+   cents=ABS(ROUND((totamt-dollars)*100,0))
+*
+** Print unit price and amount on pages 1 and 3 ONLY
+*
+   IF ((cutpage=1) OR (cutpage=2))
+      ? pcl_pos( - 3+19+(2*lin)-2,61-adj )  +  "    Total"
+      ? pcl_pos( - 3+19+(2*lin)-2,71-adj )  +  dol_str
+      ? pcl_pos( - 3+19+(2*lin)-2,78-adj )  +  "."+  IIF(cents>9.1,STR(cents,2),"0"+STR(cents,1))
+   ENDIF && ((cutpage=1) or (cutpage=2))
+ENDIF && cash_reg->cr_taxamt .Or. Shipping <> 0
+
+lin=lin+1
+
+DO WHILE lin < 19
+   lin=lin+2
+*  ? pcl_pos( - 3+19+(2*Lin)-2,0 ) +  "."
+ENDDO WHILE lin < 19
+
+********************************
+t2=""
+
+t3= ""
+
+IF EMPTY(t3)
+   t3=t2
+   t2=""
+ENDIF
+
+IF cr_taxamt <> 0
+   t4= "          Tax : " + STR( cr_taxamt, 10 , 2)
+   t5= REPL("Ä",26)
+   t6= "        Total : " + STR( cr_grtotal, 10 , 2)
+ENDIF
+
+&& Remove Tax and Total from Bottom of Invoice
+
+t4=""
+t5=""
+t6=""
+t7=""
+t8=""
+
+xl=45   && 19+(2*Lin)-2
+
+*** Print some notations on Receipt
+
+IF customer.cu_type $ "RCA"  && cr_rc="R"
+
+   r1 = PADR("Receipt Required for Returns." ,30) && + t2
+   r2 = PADR("Not Responsible for Labor on " ,30) && + t3
+   r3 = PADR("Parts Sold.                  " ,30) && + t4
+   r4 = PADR("                             " ,30) && + t5
+
+   r5 = ""  && WAS PADR("RECEIPT EXPIRES ON " + DTOC(ret_date) ,30) && + t6
+
+* PRINT MESSAGE LINES
+
+   ? pcl_pos( - 3+xl+1,06 ) +  r1
+   ? pcl_pos( - 3+xl+2,06 ) +  r2
+   ? pcl_pos( - 3+xl+3,06 ) +  r3
+   ? pcl_pos( - 3+xl+4,06 ) +  r4
+   ? pcl_pos( - 3+xl+5,06 ) +  r5
+
+   xl=xl+5
+
+ELSE
+
+   r1 = PADR("All Returns Must be"                 , 30) + t2
+   r2 = PADR("accompanied with this Receipt"       , 30) + t3
+   r3 = PADR("Returns are subject to a 20% "       , 30) + t4
+   r4 = PADR("Handling Charge. "                   , 30) + t5
+   r5 = PADR("RECEIPT EXPIRES ON "+DTOC(DATE()+31) , 30) + t6
+   r6 = PADR("                             " , 30)
+
+* PRINT MESSAGE LINES
+
+   ? pcl_pos( - 3+xl+1,06 ) +  r1
+   ? pcl_pos( - 3+xl+2,06 ) +  r2
+   ? pcl_pos( - 3+xl+3,06 ) +  r3
+   ? pcl_pos( - 3+xl+4,06 ) +  r4
+   ? pcl_pos( - 3+xl+5,06 ) +  r5
+   ? pcl_pos( - 3+xl+6,06 ) +  r6
+
+   xl=xl+6
+
+ENDIF
+
+IF cr_terms = "Check" 
+
+   xl=xl+1
+
+   x1 = REPL("-", 30)
+   x2 = PADR("A $50 fee will be charged", 30)
+   x3 = PADR("on all returned Checks"   , 30)
+   x4 = REPL("-", 30)
+
+   ? pcl_pos( - 3+xl+1,06 ) +  x1
+   ? pcl_pos( - 3+xl+2,06 ) +  x2
+   ? pcl_pos( - 3+xl+3,06 ) +  x3
+   ? pcl_pos( - 3+xl+4,06 ) +  x4
+
+   xl=xl+4
+
+ENDIF
+
+IF u_tire && (if a used tire is on inoice)
+
+   t0 = REPL("*",62)
+   t1 = PADC([Used Tires are Sold in "AS IS" Condition],56)
+   t2 = PADC([Buyer Assumes All Liability when Purchasing],56)
+   t3 = PADC([Used Tires in "AS IS" Condition],56)
+   t4 = REPL("*",62)
+
+   xl=xl+2
+
+   ? pcl_pos( - 3+xl+0,06 ) +  t0
+   ? pcl_pos( - 3+xl+1,06 ) +  t1
+   ? pcl_pos( - 3+xl+2,06 ) +  t2
+   ? pcl_pos( - 3+xl+3,06 ) +  t3
+   ? pcl_pos( - 3+xl+4,06 ) +  t4
+
+   xl=xl+4
+
+ENDIF
+
+IF customer.cu_state="PA" .AND. .NOT. customer.cu_tax .AND. ;
+      EMPTY(customer.cu_patax)
+   t1 = PADC("Please Complete and Return Pennsylvania Tax Form",56)
+ELSE
+   t1 = PADC("Thank You for Your Purchase ..... Have a Nice Day",56)
+ENDIF
+
+
+? pcl_pos( - 3+xl+2,06 ) +  t1
+
+********************************
+
+hrmin=""
+
+DO TIME
+
+? pcl_pos( 56,08-adj )  +  hrmin
+
+? pcl_pos( 56,20-adj )  +  "THANK YOU ... " + cr_user
+
+
+ON ESCAPE
+
+?? esc + "&l0H"  && HP Eject code 
+
+ON ESCAPE DO ESCAPE
+
+RETURN
+
+
+************
+PROC pcl_pos
+************
+*************************************************************
+* This is used to make a HP PCL ROW,COLUMN positioning string
+*************************************************************
+
+PARAMETERS xx, yy
+
+*** Make PCL Positioning String by Row and Column
+
+vert =ALLTRIM(STR(xx*1,5))
+horiz=ALLTRIM(STR(yy*1,5))
+
+RETURN esc+[&a]+vert+[R]+esc+[&a]+horiz+[C]
+
+**************
+PROCEDURE TIME
+**************
+**************************
+* Construct Time Variables
+**************************
+
+* TIME.PRG
+* TIME Time Conversion to AM & PM
+* MWR  10/16/86
+
+
+RELEASE TIME
+RELEASE hrmin
+PUBLIC TIME
+PUBLIC  hrmin
+STORE TIME() TO TIME
+t1=SUBSTR(TIME,1,AT(":",TIME)-1)
+DO CASE
+CASE VAL(t1) < 12
+   STORE TIME+" AM" TO TIME
+CASE VAL(t1) = 12
+   STORE TIME+" PM" TO TIME
+CASE VAL(t1) > 12
+   STORE STR(VAL(t1)-12,2)+SUBSTR(TIME,3)+" PM" TO TIME
+ENDCASE
+hrmin=IIF(LEFT(TIME,1)="0"," ",LEFT(TIME,1)) + ;
+   SUBSTR(TIME,2,4)+SUBSTR(TIME,9)
+
+RETURN
+*/
+
+**********************
+* Calculate Tax Amount
+**********************
+
+******************
+PROCEDURE tax_calc
+******************
+
+* TAX_CALC  Calculate PA State Sales Tax based on Chart  MWR  01/94
+
+PARAM saleamt
+
+DO CASE
+CASE TYPE("tax_rate")="U"
+   PUBLIC tax_rate
+CASE TYPE("tax_rate")<>"N"
+   RELEASE tax_rate
+   PUBLIC tax_rate
+ENDCASE
+
+IF VAL(cash_reg.cr_store)=2
+   STORE .07 TO tax_rate
+ELSE
+   STORE .06 TO tax_rate
+ENDIF
+
+credit = (saleamt < 0)
+
+absamt = ABS(saleamt)
+
+dollars = INT(absamt)
+cents   = absamt - dollars
+
+extra = 0
+
+DO CASE
+CASE cents <= .10
+   extra= .00
+CASE cents <= .17
+   extra= .01
+CASE cents <= .34
+   extra= .02
+CASE cents <= .50
+   extra= .03
+CASE cents <= .67
+   extra= .04
+CASE cents <= .84
+   extra= .05
+CASE cents <= .99
+   extra= .06
+ENDCASE
+
+taxamt =  ROUND( IIF( credit, -1, 1 ) * ((dollars * tax_rate) + extra), 2 )
+
+RETURN taxamt
+
+* Declare some Public Variables
+
+***PUBLIC lvar, lqty, rcode, lprc, lamt, imno, carno, invno, dash, ret_date
+***PUBLIC t2, t3, t4, t5, t6, altname, d_t, bl1, bl2, u_tire
+***PUBLIC cmp_dscr, cmp_dscr2, SPECIAL, hpp_no, price, imnum, custno
+
+
+*******************************************
+***  setup some terms memory variables  ***
+*******************************************
+
+   cash    = "cash"   $ LOWER(cr_terms)
+   refund  = "refund" $ LOWER(cr_terms)
+   charge  = "charge" $ LOWER(cr_terms)
+   CHECK   = "check"  $ LOWER(cr_terms)
+   credit  = "credit" $ LOWER(cr_terms)
+   pull    = "pull"   $ LOWER(cr_terms)

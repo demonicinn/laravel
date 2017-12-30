@@ -1,0 +1,28 @@
+[05-Oct-2017 15:11:32 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[05-Oct-2017 15:12:15 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[05-Oct-2017 15:12:56 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Projects.php on line 8
+[05-Oct-2017 15:13:45 UTC] PHP Fatal error:  Class 'App\eloquent' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[05-Oct-2017 15:14:27 UTC] PHP Parse error:  syntax error, unexpected '/', expecting ',' or ';' in /home/paradvvz/public_html/pms/new/app/Skills.php on line 4
+[05-Oct-2017 15:14:42 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[05-Oct-2017 15:17:02 UTC] PHP Fatal error:  Class 'Illuminate\Database\Eloquent\User' not found in /home/paradvvz/public_html/pms/new/app/Projects.php on line 10
+[05-Oct-2017 15:19:18 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Projects_tasks.php on line 5
+[05-Oct-2017 15:20:28 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Upload.php on line 5
+[05-Oct-2017 15:21:41 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Logs.php on line 5
+[05-Oct-2017 15:21:41 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Logs.php on line 5
+[06-Oct-2017 04:35:19 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Skills.php on line 5
+[06-Oct-2017 04:37:17 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Skills.php on line 5
+[06-Oct-2017 04:39:55 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Skills.php on line 5
+[06-Oct-2017 04:40:11 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Projects_credentials.php on line 5
+[06-Oct-2017 04:40:23 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Projects_assigned.php on line 5
+[06-Oct-2017 04:40:40 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Projects_skills.php on line 5
+[06-Oct-2017 04:40:56 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:41:25 UTC] PHP Fatal error:  Cannot use Illuminate\Foundation\Auth\User as User because the name is already in use in /home/paradvvz/public_html/pms/new/app/Skills.php on line 5
+[06-Oct-2017 04:42:37 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:44:03 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:45:04 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:45:10 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:45:15 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:52:52 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:52:54 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:53:17 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8
+[06-Oct-2017 04:54:08 UTC] PHP Fatal error:  Class 'App\user' not found in /home/paradvvz/public_html/pms/new/app/Skills.php on line 8

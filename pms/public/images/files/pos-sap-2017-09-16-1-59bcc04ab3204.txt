@@ -1,0 +1,66 @@
+34906
+
+
+0 */1 * * * curl http://pos-sap.qbrand.com/api/scheduler/cron
+45 5 * * * curl http://pos-sap.qbrand.com/api/backup/create
+
+
+#minute hour day month day_of_week username command
+0 1 * * * ping http://pos-sap.qbrand.com/api/scheduler/cron
+
+ps aux | grep ping
+
+curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+[pardot-form class="gray" height="550" id="517" title="Contact Us Form"]
+
+Installation Notes
+
+server:    pos-sap.qbrand.com
+WAN ip:    65.111.169.147
+LAN ip:    192.168.0.1
+
+OS:    clearos 7.3 Community (final)
+Core:    CentOS 7
+RAM:    4 gb
+Disk:    100 gb
+
+root pw: pos-sap@qbrand
+Managment Console: https://pos-sap.qbrand.com:81
+SSH access: enabled for root, jls, webdev
+
+User accounts / password:
+    jls - John Satterfield / hidden
+    jeff - Jeff Spitz / hidden
+    webdev - Website Developers / pos-sap
+
+FTP access notes:
+    - use user account credentials
+    - passive
+    - "pos-sap.qbrand.com" folder is actual website folder
+    - "web-dev" is a flexshare to hold items / source code, etc
+
+Default website notes:
+    - "pos-sap.qbrand.com" is the default website
+    - /var/www/html is the folder
+    - php version 5.4.16
+    - apache 2.4.6 (centos)
+
+Database notes:
+    - mariadb (mysql)
+    - root password - pos-sap
+
+Web App Database notes:
+    - database: spitzdata
+    - user: brakedeal
+    - password: Deal1234@
+    - available to all hosts "%"
+
+SMTP Server info:
+    - send to localhost
+    - will be relayed by local smtp server to serverout.serverpronto.com
+
+PPTP VPN Info:
+    - local lan: 192.168.0.x
+    - Irwin lan: 192.168.1.x
+    - Target printer P14-PTR - 192.168.1.56 (HP 4250)
+    - Target printer thermal left?
