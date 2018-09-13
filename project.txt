@@ -1,0 +1,27 @@
+git lab
+
+http://git.alpacode.com
+
+
+http://sumop014.alpacode.com/
+
+User: eric.c@alpacode.com
+
+Password: test123
+
+
+
+laravel depencies
+
+https://laravelcollective.com/docs/5.4/html
+
+
+https://github.com/uxweb/sweet-alert
+composer require uxweb/sweet-alert
+
+
+https://adminlte.io/blog/integrate-adminlte-with-laravel
+
+composer require "almasaeed2010/adminlte=~2.4"
+
+https://adminlte.io/docs/2.4/installation

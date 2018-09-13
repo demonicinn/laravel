@@ -1,0 +1,6 @@
+@php ($setting=settings())
+@include('layouts.front.header')
+@include('layouts.front.navbar')
+@include('layouts.front.body')
+@include('layouts.front.footer_text')
+@include('layouts.front.footer')
